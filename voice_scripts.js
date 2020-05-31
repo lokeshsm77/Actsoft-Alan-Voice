@@ -262,6 +262,21 @@ intent(`(Show me|Choose|Select|Open|Start|) $(ITEM ${TIME_INTENT})`, p => {
     p.then(timeContext)
 });
 
+intent(`(I just walked in|I just came to office|I just came to work)`, p => {
+        p.state = {}; //Check if this is correct way to reset state
+
+    p.play(`(Opening|Showing) Time Keeping.`)
+    p.play({command: 'showScreen', screenText: "Time Keeping", embeddedPage: true, page: "actsoft_example.html"});
+    p.play({command: "open", screen: "time_keeping"})
+            var timeStamp = api.moment().tz(p.timeZone).format("h:mmA");
+            p.play(`(Okay|Good), you have clocked in at ` + timeStamp + `. Make sure to fill out the COVID Test Form after you're done! Say Start COVID test to begin.`);
+            p.play({command: "clock_in", time: timeStamp})
+            p.play({command: 'showForm', embeddedPage: true, page: "actsoft_example.html", 
+                    formKey: "Clock In", formValue: timeStamp});
+            p.state.clocked_in = true;
+    p.then(timeContext)
+});
+
 intent(`(Show me|Choose|Select|Open|Start|) $(ITEM ${COVID_INTENT})`, p => {
     p.play(`(Opening|Showing) COVID Test Form. What is your name?`)
     //p.play({command: 'showScreen', screenText: "COVID Test Form", embeddedPage: true, page: "actsoft_example.html"});
